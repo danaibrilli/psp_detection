@@ -54,8 +54,8 @@ class VAE3D(VAEBackbone):
         self.encoder = nn.Sequential(*modules)
         #self.linear_postEnc = nn.Linear(40960, hidden_dims_variable[-1]*8)
         # input dim should be the dim after flatten
-        self.fc_mu = nn.Linear(hidden_dims_variable[-1]*8, latent_dim) #was *8
-        self.fc_var = nn.Linear(hidden_dims_variable[-1]*8, latent_dim)  # 8 = 2 ** 3
+        self.fc_mu = nn.Linear(hidden_dims_variable[-1], latent_dim) #was *8
+        self.fc_var = nn.Linear(hidden_dims_variable[-1], latent_dim)  # 8 = 2 ** 3
 
         # Build Decoder
         modules = []
@@ -71,7 +71,7 @@ class VAE3D(VAEBackbone):
                                     hidden_dims_variable[i + 1],
                                     kernel_size=3,
                                     stride=2,
-                                    padding=0, # was 0 -> 1 for patch
+                                    padding=1, # was 0 -> 1 for patch
                                     output_padding=1),
                     nn.BatchNorm3d(hidden_dims_variable[i + 1]),
                     nn.LeakyReLU())
@@ -81,7 +81,7 @@ class VAE3D(VAEBackbone):
 
         self.final_layer = nn.Sequential( 
             nn.Conv3d(hidden_dims_variable[-1], out_channels=1,  # output_channels should be the same as input channel= -> 1
-                      kernel_size=3, padding=2), #changed padding from 2 to 1 for patch
+                      kernel_size=3, padding=1), #changed padding from 2 to 1
             nn.Sigmoid()
         )
 
